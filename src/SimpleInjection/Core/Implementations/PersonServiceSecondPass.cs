@@ -49,9 +49,7 @@ namespace Core.Implementations
                 sqlHelper.SqlCommand.CommandText = sSQL;
                 sqlHelper.SqlCommand.Parameters.Clear();
                 sqlHelper.AddParam("personId", personId);
-                _myReader = sqlHelper.SqlCommand.ExecuteReader();
-                var table = new DataTable();
-                table.Load(_myReader);
+                var table = sqlHelper.GetTable();
                 var firstName = table.Rows[0][0].ToString();
                 var lastName = table.Rows[0][1].ToString();
                 result = new Person { PersonId = personId, FirstName = firstName, LastName = lastName };
