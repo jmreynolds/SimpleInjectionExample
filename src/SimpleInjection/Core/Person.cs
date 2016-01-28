@@ -6,6 +6,7 @@ namespace Core
     {
         public Person()
         {
+            PersonId = Guid.Empty;
         }
 
         public Guid PersonId { get; set; }
