@@ -13,7 +13,20 @@ namespace ConsoleHarness
         static void Main(string[] args)
         {
             // First pass
-            var firstPass = new FirstPass();
+            //FirstPass();
+
+            // Second Pass
+            SecondPass();
+        }
+
+        private static void SecondPass()
+        {
+            
+        }
+
+        static void FirstPass()
+        {
+            var firstPass = new PersonServiceFirstPass();
             var person = new Person();
             person.FirstName = "Joe";
             person.LastName = "Reynolds";
@@ -22,11 +35,9 @@ namespace ConsoleHarness
             var readPerson = firstPass.GetPerson(newId);
             Console.WriteLine($"New Person ID: {readPerson.PersonId} {Environment.NewLine} " +
                               $"New Name: {readPerson.FirstName} {readPerson.LastName} ");
-
             Console.WriteLine("Did it work?");
             Console.ReadKey();
             firstPass.CleanUp();
-
         }
     }
 }
