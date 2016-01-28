@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Core
+namespace Core.Implementations
 {
     public class SqlHelper : IDisposable
     {
@@ -23,17 +23,6 @@ namespace Core
                 _sqlConnection.Close();
         }
 
-        public SqlDataReader GetDataReader(string sqlCommand)
-        {
-            _sqlCommand.CommandText = sqlCommand;
-            return _sqlCommand.ExecuteReader();
-        }
-
-        public SqlDataReader GetDataReader()
-        {
-            return _sqlCommand.ExecuteReader();
-        }
-
         public SqlCommand SqlCommand
         {
             get { return _sqlCommand; }
@@ -47,11 +36,12 @@ namespace Core
             myAdpater.Fill(myDataSet);
             return myDataSet;
         }
-        public void SetupSproc(string getbenefitsummaryemployee)
+
+        public DataTable GetTable()
         {
-            _sqlCommand.CommandText = getbenefitsummaryemployee;
-            _sqlCommand.CommandType = CommandType.StoredProcedure;
-            _sqlCommand.Parameters.Clear();
+            var ds = GetDataSet();
+            var dt = ds.Tables[0];
+            return dt;
         }
 
         public void AddParam<T>(string key, T value)
@@ -59,17 +49,6 @@ namespace Core
             if (key.StartsWith("@")) key = key.Substring(1);
             _sqlCommand.Parameters.AddWithValue($"@{key}", value);
         }
-        public void AddOutputParam(string paramName, SqlDbType sqlDbType)
-        {
-            if (paramName.StartsWith("@")) paramName = paramName.Substring(1);
-            // Create parameter with Direction as Output (and correct name and type)
-            var outputIdParam = new SqlParameter($"@{paramName}", sqlDbType)
-            {
-                Direction = ParameterDirection.Output
-            };
-            _sqlCommand.Parameters.Add(outputIdParam);
-        }
-
 
         public void Dispose()
         {
