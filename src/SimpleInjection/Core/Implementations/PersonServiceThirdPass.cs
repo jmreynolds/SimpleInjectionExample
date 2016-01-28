@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Data;
 using System.Data.SqlClient;
 using Core.SqlHelpers;
 
 namespace Core.Implementations
 {
-    public class PersonServiceSecondPass
+    public class PersonServiceThirdPass
     {
         string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;" +
-                                   "Initial Catalog=SimpleInjectionExample;" +
-                                   "Integrated Security=True;Connect Timeout=30;" +
-                                   "Encrypt=False;TrustServerCertificate=False;" +
-                                   "ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+                          "Initial Catalog=SimpleInjectionExample;" +
+                          "Integrated Security=True;Connect Timeout=30;" +
+                          "Encrypt=False;TrustServerCertificate=False;" +
+                          "ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
         private SqlDataReader _myReader;
 
@@ -27,14 +26,12 @@ namespace Core.Implementations
                           "(@personId, @FirstName, @LastName);" +
                           "SELECT SCOPE_IDENTITY()";
             Guid identity = Guid.NewGuid();
-            using (var sqlHelper = new SqlHelperFirst(_connectionString))
+            using (var sqlHelper = new SqlHelperSecond(_connectionString))
             {
-                sqlHelper.SqlCommand.CommandText = sSQL;
-                sqlHelper.SqlCommand.Parameters.Clear();
                 sqlHelper.AddParam("personId", identity);
                 sqlHelper.AddParam("FirstName", person.FirstName);
                 sqlHelper.AddParam("LastName", person.LastName);
-                sqlHelper.SqlCommand.ExecuteNonQuery();
+                sqlHelper.ExecuteNonQuery(sSQL);
             }
             return identity;
         }
@@ -45,12 +42,10 @@ namespace Core.Implementations
                           "FROM Person " +
                           "WHERE PersonId = @personId";
             Person result;
-            using (var sqlHelper = new SqlHelperFirst(_connectionString))
+            using (var sqlHelper = new SqlHelperSecond(_connectionString))
             {
-                sqlHelper.SqlCommand.CommandText = sSQL;
-                sqlHelper.SqlCommand.Parameters.Clear();
                 sqlHelper.AddParam("personId", personId);
-                var table = sqlHelper.GetTable();
+                var table = sqlHelper.GetTable(sSQL);
                 var firstName = table.Rows[0][0].ToString();
                 var lastName = table.Rows[0][1].ToString();
                 result = new Person { PersonId = personId, FirstName = firstName, LastName = lastName };
@@ -61,10 +56,9 @@ namespace Core.Implementations
         public void CleanUp()
         {
             string sSQL = "DELETE FROM Person";
-            using (var sqlHelper = new SqlHelperFirst(_connectionString))
+            using (var sqlHelper = new SqlHelperSecond(_connectionString))
             {
-                sqlHelper.SqlCommand.CommandText = sSQL;
-                sqlHelper.SqlCommand.ExecuteNonQuery();
+                sqlHelper.ExecuteNonQuery(sSQL);
             }
         }
 

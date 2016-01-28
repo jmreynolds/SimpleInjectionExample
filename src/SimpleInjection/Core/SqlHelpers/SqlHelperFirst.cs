@@ -2,14 +2,14 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Core.Implementations
+namespace Core.SqlHelpers
 {
-    public class SqlHelper : IDisposable
+    public class SqlHelperFirst : IDisposable
     {
         private readonly SqlCommand _sqlCommand;
         private readonly SqlConnection _sqlConnection;
 
-        public SqlHelper(string connectionString)
+        public SqlHelperFirst(string connectionString)
         {
             _sqlConnection = new SqlConnection(connectionString);
             _sqlCommand = new SqlCommand { Connection = _sqlConnection };
@@ -55,7 +55,7 @@ namespace Core.Implementations
             Close();
         }
 
-        ~SqlEasyReader()
+        ~SqlHelperFirst()
         {
             if (_sqlConnection != null && _sqlConnection.State != ConnectionState.Closed)
                 _sqlConnection.Close();
