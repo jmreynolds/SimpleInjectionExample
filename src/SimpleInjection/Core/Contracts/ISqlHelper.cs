@@ -1,12 +1,17 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace Core.Contracts
 {
-    public interface ISqlHelper
+    public interface ISqlHelper : IDisposable
     {
-        void Close();
-        SqlDataReader GetDataReader(string sqlCommand);
-        SqlDataReader GetDataReader();
-        SqlCommand SelectCommand { get; }
+        void ExecuteNonQuery(string sqlQuery);
+        void AddParam<T>(string key, T value);
+        DataTable GetTable(string sSQL);
+    }
+    public interface ISqlHelperFactory
+    {
+        ISqlHelper GetSqlHelper();
     }
 }

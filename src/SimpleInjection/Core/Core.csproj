@@ -41,13 +41,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contracts\ISqlHelper.cs" />
+    <Compile Include="Fakes\FakeSqlHelper.cs" />
     <Compile Include="Implementations\PersonServiceFirstPass.cs" />
+    <Compile Include="Implementations\PersonServiceFourthPass.cs" />
     <Compile Include="Implementations\PersonServiceSecondPass.cs" />
     <Compile Include="Implementations\PersonServiceThirdPass.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlHelpers\SqlHelperFirst.cs" />
     <Compile Include="SqlHelpers\SqlHelperSecond.cs" />
+    <Compile Include="SqlHelpers\SqlHelperThird.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

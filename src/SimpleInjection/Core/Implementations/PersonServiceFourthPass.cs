@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Data.SqlClient;
+using Core.Contracts;
 using Core.SqlHelpers;
 
 namespace Core.Implementations
 {
-    public class PersonServiceThirdPass
+    public class PersonServiceFourthPass
     {
-        string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;" +
-                          "Initial Catalog=SimpleInjectionExample;" +
-                          "Integrated Security=True;Connect Timeout=30;" +
-                          "Encrypt=False;TrustServerCertificate=False;" +
-                          "ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        readonly ISqlHelperFactory _sqlHelperFactory;
 
-        private SqlDataReader _myReader;
+        public PersonServiceFourthPass(ISqlHelperFactory factory)
+        {
+            _sqlHelperFactory = factory;
+        }
 
         public Guid WritePerson(Person person)
         {
@@ -25,7 +24,7 @@ namespace Core.Implementations
                           "VALUES" +
                           "(@personId, @FirstName, @LastName);";
             Guid identity = Guid.NewGuid();
-            using (var sqlHelper = new SqlHelperSecond(_connectionString))
+            using (var sqlHelper = _sqlHelperFactory.GetSqlHelper())
             {
                 sqlHelper.AddParam("personId", identity);
                 sqlHelper.AddParam("FirstName", person.FirstName);
@@ -41,7 +40,7 @@ namespace Core.Implementations
                           "FROM Person " +
                           "WHERE PersonId = @personId";
             Person result;
-            using (var sqlHelper = new SqlHelperSecond(_connectionString))
+            using (var sqlHelper = _sqlHelperFactory.GetSqlHelper())
             {
                 sqlHelper.AddParam("personId", personId);
                 var table = sqlHelper.GetTable(sSQL);
@@ -55,7 +54,7 @@ namespace Core.Implementations
         public void CleanUp()
         {
             string sSQL = "DELETE FROM Person";
-            using (var sqlHelper = new SqlHelperSecond(_connectionString))
+            using (var sqlHelper = _sqlHelperFactory.GetSqlHelper())
             {
                 sqlHelper.ExecuteNonQuery(sSQL);
             }
