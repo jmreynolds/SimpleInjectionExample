@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Core.Implementations
 {
-    public class PersonServiceFirstPass
+    public class PersonService
     {
         string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;" +
                                    "Initial Catalog=SimpleInjectionExample;" +
