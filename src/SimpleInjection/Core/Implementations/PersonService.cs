@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Core.SqlHelpers;
 
 namespace Core.Implementations
 {
@@ -16,6 +12,7 @@ namespace Core.Implementations
                                    "Encrypt=False;TrustServerCertificate=False;" +
                                    "ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
+        private SqlDataReader _myReader;
 
         public Guid WritePerson(Person person)
         {
@@ -29,14 +26,14 @@ namespace Core.Implementations
                           "(@personId, @FirstName, @LastName);" +
                           "SELECT SCOPE_IDENTITY()";
             Guid identity = Guid.NewGuid();
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var sqlHelper = new SqlHelper(_connectionString))
             {
-               connection.Open();
-                SqlCommand command = new SqlCommand(sSQL, connection);
-                command.Parameters.Add("@personId", SqlDbType.UniqueIdentifier).Value = identity;
-                command.Parameters.Add("@FirstName", SqlDbType.VarChar).Value = person.FirstName;
-                command.Parameters.Add("@LastName", SqlDbType.VarChar).Value = person.LastName;
-                command.ExecuteNonQuery();
+                sqlHelper.SqlCommand.CommandText = sSQL;
+                sqlHelper.SqlCommand.Parameters.Clear();
+                sqlHelper.AddParam("personId", identity);
+                sqlHelper.AddParam("FirstName", person.FirstName);
+                sqlHelper.AddParam("LastName", person.LastName);
+                sqlHelper.SqlCommand.ExecuteNonQuery();
             }
             return identity;
         }
@@ -45,19 +42,17 @@ namespace Core.Implementations
         {
             string sSQL = "SELECT FirstName, LastName " +
                           "FROM Person " +
-                          "WHERE PersonId = @PersonId";
+                          "WHERE PersonId = @personId";
             Person result;
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var sqlHelper = new SqlHelper(_connectionString))
             {
-                connection.Open();
-                SqlCommand command = new SqlCommand(sSQL, connection);
-                command.Parameters.Add("@PersonId", SqlDbType.UniqueIdentifier).Value = personId;
-                var reader = command.ExecuteReader();
-                var table = new DataTable();
-                table.Load(reader);
+                sqlHelper.SqlCommand.CommandText = sSQL;
+                sqlHelper.SqlCommand.Parameters.Clear();
+                sqlHelper.AddParam("personId", personId);
+                var table = sqlHelper.GetTable();
                 var firstName = table.Rows[0][0].ToString();
                 var lastName = table.Rows[0][1].ToString();
-                result = new Person {PersonId = personId, FirstName = firstName, LastName = lastName};
+                result = new Person { PersonId = personId, FirstName = firstName, LastName = lastName };
             }
             return result;
         }
@@ -65,12 +60,12 @@ namespace Core.Implementations
         public void CleanUp()
         {
             string sSQL = "DELETE FROM Person";
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var sqlHelper = new SqlHelper(_connectionString))
             {
-                connection.Open();
-                SqlCommand command = new SqlCommand(sSQL, connection);
-                command.ExecuteNonQuery();
+                sqlHelper.SqlCommand.CommandText = sSQL;
+                sqlHelper.SqlCommand.ExecuteNonQuery();
             }
         }
+
     }
 }
