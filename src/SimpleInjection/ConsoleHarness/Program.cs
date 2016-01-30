@@ -1,7 +1,7 @@
 ﻿using System;
 using Core;
 using Core.Implementations;
-using Core.SqlHelpers;
+using DataAccess;
 using static System.Console;
 
 namespace ConsoleHarness
