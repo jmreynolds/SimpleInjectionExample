@@ -1,6 +1,7 @@
 ﻿using System;
 using Core;
 using Core.Implementations;
+using Core.SqlHelpers;
 using static System.Console;
 
 namespace ConsoleHarness
@@ -14,7 +15,7 @@ namespace ConsoleHarness
 
         static void RunService()
         {
-            var personService = new PersonService();
+            var personService = new PersonService(new SqlHelperFactory());
             var person = new Person
             {
                 FirstName = "Joe",

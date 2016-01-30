@@ -1,15 +1,17 @@
 ﻿using System;
+using Core.Contracts;
 using Core.SqlHelpers;
 
 namespace Core.Implementations
 {
     public class PersonService
     {
-        readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;" +
-                           "Initial Catalog=SimpleInjectionExample;" +
-                           "Integrated Security=True;Connect Timeout=30;" +
-                           "Encrypt=False;TrustServerCertificate=False;" +
-                           "ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        readonly ISqlHelperFactory _sqlHelperFactory;
+
+        public PersonService(ISqlHelperFactory factory)
+        {
+            _sqlHelperFactory = factory;
+        }
 
         public Guid WritePerson(Person person)
         {
@@ -17,12 +19,12 @@ namespace Core.Implementations
             {
                 throw new ArgumentException("Person Id is not empty.");
             }
-            const string sSQL = "INSERT INTO Person " +
-                                "(PersonId, FirstName, LastName)" +
-                                "VALUES" +
-                                "(@personId, @FirstName, @LastName);";
+            string sSQL = "INSERT INTO Person " +
+                          "(PersonId, FirstName, LastName)" +
+                          "VALUES" +
+                          "(@personId, @FirstName, @LastName);";
             Guid identity = Guid.NewGuid();
-            using (var sqlHelper = new SqlHelper(_connectionString))
+            using (var sqlHelper = _sqlHelperFactory.GetSqlHelper())
             {
                 sqlHelper.AddParam("personId", identity);
                 sqlHelper.AddParam("FirstName", person.FirstName);
@@ -34,11 +36,11 @@ namespace Core.Implementations
 
         public Person GetPerson(Guid personId)
         {
-            const string sSQL = "SELECT FirstName, LastName " +
-                                "FROM Person " +
-                                "WHERE PersonId = @personId";
+            string sSQL = "SELECT FirstName, LastName " +
+                          "FROM Person " +
+                          "WHERE PersonId = @personId";
             Person result;
-            using (var sqlHelper = new SqlHelper(_connectionString))
+            using (var sqlHelper = _sqlHelperFactory.GetSqlHelper())
             {
                 sqlHelper.AddParam("personId", personId);
                 var table = sqlHelper.GetTable(sSQL);
@@ -51,8 +53,8 @@ namespace Core.Implementations
 
         public void CleanUp()
         {
-            const string sSQL = "DELETE FROM Person";
-            using (var sqlHelper = new SqlHelper(_connectionString))
+            string sSQL = "DELETE FROM Person";
+            using (var sqlHelper = _sqlHelperFactory.GetSqlHelper())
             {
                 sqlHelper.ExecuteNonQuery(sSQL);
             }
