@@ -9,10 +9,10 @@ namespace ConsoleHarness
     {
         static void Main(string[] args)
         {
-            FirstPass();
+            RunService();
         }
 
-        static void FirstPass()
+        static void RunService()
         {
             var personService = new PersonService();
             var person = new Person
@@ -23,8 +23,8 @@ namespace ConsoleHarness
             var newId = personService.WritePerson(person);
 
             var readPerson = personService.GetPerson(newId);
-            WriteLine($"New Person ID: {readPerson.PersonId} {Environment.NewLine} " +
-                              $"New Name: {readPerson.FirstName} {readPerson.LastName} ");
+            WriteLine($"New Person ID: {readPerson.PersonId}");
+            WriteLine($"New Name: {readPerson.FirstName} {readPerson.LastName}");
             WriteLine("Did it work?");
             ReadKey();
             personService.CleanUp();
