@@ -9,10 +9,10 @@ namespace ConsoleHarness
     {
         static void Main(string[] args)
         {
-            FirstPass();
+            RunService();
         }
 
-        static void FirstPass()
+        static void RunService()
         {
             var personService = new PersonService();
             var person = new Person
