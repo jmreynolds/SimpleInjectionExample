@@ -1,10 +1,24 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using Core.Contracts;
 
 namespace Core.SqlHelpers
 {
-    public class SqlHelper : IDisposable
+    public class SqlHelperFactory : ISqlHelperFactory
+    {
+        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;" +
+                                                    "Initial Catalog=SimpleInjectionExample;" +
+                                                    "Integrated Security=True;Connect Timeout=30;" +
+                                                    "Encrypt=False;TrustServerCertificate=False;" +
+                                                    "ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+        public ISqlHelper GetSqlHelper()
+        {
+            return new SqlHelper(_connectionString);
+        }
+    }
+    public class SqlHelper : ISqlHelper
     {
         private readonly SqlCommand _sqlCommand;
         private readonly SqlConnection _sqlConnection;
@@ -22,22 +36,18 @@ namespace Core.SqlHelpers
             _sqlCommand.CommandText = sqlQuery;
             _sqlCommand.ExecuteNonQuery();
         }
+
         public void AddParam<T>(string key, T value)
         {
             if (key.StartsWith("@")) key = key.Substring(1);
             _sqlCommand.Parameters.AddWithValue($"@{key}", value);
         }
 
-        public void ClearParameters()
-        {
-            _sqlCommand.Parameters.Clear();
-        }
-
         public DataTable GetTable(string sSQL)
         {
             _sqlCommand.CommandText = sSQL;
             var myAdpater = new SqlDataAdapter { SelectCommand = _sqlCommand };
-            DataTable dt = new DataTable();
+            var dt = new DataTable();
             myAdpater.Fill(dt);
             return dt;
         }
@@ -48,5 +58,9 @@ namespace Core.SqlHelpers
                 _sqlConnection.Close();
         }
 
+        public void ClearParameters()
+        {
+            _sqlCommand.Parameters.Clear();
+        }
     }
 }
