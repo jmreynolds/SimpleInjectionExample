@@ -1,6 +1,5 @@
 ﻿using System;
 using Core.Contracts;
-using Core.SqlHelpers;
 
 namespace Core.Implementations
 {
