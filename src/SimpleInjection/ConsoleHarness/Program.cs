@@ -23,8 +23,8 @@ namespace ConsoleHarness
             var newId = personService.WritePerson(person);
 
             var readPerson = personService.GetPerson(newId);
-            WriteLine($"New Person ID: {readPerson.PersonId} {Environment.NewLine} " +
-                              $"New Name: {readPerson.FirstName} {readPerson.LastName} ");
+            WriteLine($"New Person ID: {readPerson.PersonId}");
+            WriteLine($"New Name: {readPerson.FirstName} {readPerson.LastName}");
             WriteLine("Did it work?");
             ReadKey();
             personService.CleanUp();

@@ -14,50 +14,37 @@ namespace Core.SqlHelpers
             _sqlConnection = new SqlConnection(connectionString);
             _sqlCommand = new SqlCommand { Connection = _sqlConnection };
             _sqlConnection.Open();
+            ClearParameters();
         }
 
-        public void Close()
+        public void ExecuteNonQuery(string sqlQuery)
         {
-            // close the connection
-            if (_sqlConnection.State == ConnectionState.Open)
-                _sqlConnection.Close();
+            _sqlCommand.CommandText = sqlQuery;
+            _sqlCommand.ExecuteNonQuery();
         }
-
-        public SqlCommand SqlCommand
-        {
-            get { return _sqlCommand; }
-        }
-
-        public DataSet GetDataSet()
-        {
-            var myAdpater = new SqlDataAdapter { SelectCommand = _sqlCommand };
-            var myDataSet = new DataSet();
-
-            myAdpater.Fill(myDataSet);
-            return myDataSet;
-        }
-
-        public DataTable GetTable()
-        {
-            var ds = GetDataSet();
-            var dt = ds.Tables[0];
-            return dt;
-        }
-
         public void AddParam<T>(string key, T value)
         {
             if (key.StartsWith("@")) key = key.Substring(1);
             _sqlCommand.Parameters.AddWithValue($"@{key}", value);
         }
 
-        public void Dispose()
+        public void ClearParameters()
         {
-            Close();
+            _sqlCommand.Parameters.Clear();
         }
 
-        ~SqlHelper()
+        public DataTable GetTable(string sSQL)
         {
-            if (_sqlConnection != null && _sqlConnection.State != ConnectionState.Closed)
+            _sqlCommand.CommandText = sSQL;
+            var myAdpater = new SqlDataAdapter { SelectCommand = _sqlCommand };
+            DataTable dt = new DataTable();
+            myAdpater.Fill(dt);
+            return dt;
+        }
+
+        public void Dispose()
+        {
+            if (_sqlConnection.State == ConnectionState.Open)
                 _sqlConnection.Close();
         }
 
