@@ -36,8 +36,8 @@ namespace Core.Implementations
         public Person GetPerson(Guid personId)
         {
             string sSQL = "SELECT FirstName, LastName " +
-                          "FROM Person " +
-                          "WHERE PersonId = @personId";
+                            "FROM Person " +
+                            "WHERE PersonId = @personId";
             Person result;
             using (var sqlHelper = _sqlHelperFactory.GetSqlHelper())
             {
@@ -45,7 +45,7 @@ namespace Core.Implementations
                 var table = sqlHelper.GetTable(sSQL);
                 var firstName = table.Rows[0][0].ToString();
                 var lastName = table.Rows[0][1].ToString();
-                result = new Person { PersonId = personId, FirstName = firstName, LastName = lastName };
+                result = new Person(personId, firstName, lastName);
             }
             return result;
         }

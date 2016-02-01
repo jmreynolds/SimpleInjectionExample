@@ -22,6 +22,7 @@ namespace ConsoleHarness
                 LastName = "Reynolds"
             };
             var newId = personService.WritePerson(person);
+            WriteLine(newId);
 
             var readPerson = personService.GetPerson(newId);
             WriteLine($"New Person ID: {readPerson.PersonId}");
