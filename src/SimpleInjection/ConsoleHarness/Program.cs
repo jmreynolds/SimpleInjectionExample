@@ -19,7 +19,8 @@ namespace ConsoleHarness
             var person = new Person
             {
                 FirstName = "Joe",
-                LastName = "Reynolds"
+                LastName = "Reynolds",
+                BirthDate = DateTime.Parse("1/1/1900")
             };
             var newId = personService.WritePerson(person);
             WriteLine(newId);
@@ -27,6 +28,7 @@ namespace ConsoleHarness
             var readPerson = personService.GetPerson(newId);
             WriteLine($"New Person ID: {readPerson.PersonId}");
             WriteLine($"New Name: {readPerson.FirstName} {readPerson.LastName}");
+            WriteLine($"Birthday: {readPerson.BirthDate.ToShortDateString()}");
             WriteLine("Did it work?");
             ReadKey();
             personService.CleanUp();
