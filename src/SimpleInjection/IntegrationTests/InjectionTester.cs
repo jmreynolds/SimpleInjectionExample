@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using Core;
 using Core.Contracts;
@@ -25,11 +26,11 @@ namespace IntegrationTests
         public void ShouldWritePerson()
         {
             _personService = new PersonService(_factory);
-            _person = new Person { FirstName = "First", LastName = "Last" };
+            _person = new Person { FirstName = "First", LastName = "Last", BirthDate = DateTime.Now};
             var newId = _personService.WritePerson(_person);
 
             // Yucky Sql Stuff to verify
-            string sSQL = "SELECT FirstName, LastName " +
+            string sSQL = "SELECT FirstName, LastName, BirthDate " +
               "FROM Person " +
               "WHERE PersonId = @PersonId";
             Person result;
@@ -43,7 +44,8 @@ namespace IntegrationTests
                 table.Load(reader);
                 var firstName = table.Rows[0][0].ToString();
                 var lastName = table.Rows[0][1].ToString();
-                result = new Person { PersonId = newId, FirstName = firstName, LastName = lastName };
+                var birthdate = DateTime.Parse(table.Rows[0][2].ToString());
+                result = new Person (newId, firstName, lastName, birthdate);
             }
 
             _person.FirstName.ShouldEqual(result.FirstName);
@@ -55,7 +57,7 @@ namespace IntegrationTests
         public void ShouldReadPerson()
         {
             _personService = new PersonService(_factory);
-            _person = new Person { FirstName = "First", LastName = "Last" };
+            _person = new Person { FirstName = "First", LastName = "Last", BirthDate = DateTime.Now};
             var newId = _personService.WritePerson(_person);
             var readPerson = _personService.GetPerson(newId);
             readPerson.FirstName.ShouldEqual(_person.FirstName);
