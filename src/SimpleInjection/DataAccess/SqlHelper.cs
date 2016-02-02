@@ -6,33 +6,34 @@ namespace DataAccess
 {
     public class SqlHelper : ISqlHelper
     {
-        private readonly SqlCommand _sqlCommand;
-        private readonly SqlConnection _sqlConnection;
+        public SqlCommand Command { get; }
+        public SqlConnection Connection { get; }
 
         public SqlHelper(string connectionString)
         {
-            _sqlConnection = new SqlConnection(connectionString);
-            _sqlCommand = new SqlCommand { Connection = _sqlConnection };
-            _sqlConnection.Open();
+            Connection = new SqlConnection(connectionString);
+            Command = new SqlCommand {Connection = Connection};
+            Connection.Open();
             ClearParameters();
         }
 
+
         public void ExecuteNonQuery(string sqlQuery)
         {
-            _sqlCommand.CommandText = sqlQuery;
-            _sqlCommand.ExecuteNonQuery();
+            Command.CommandText = sqlQuery;
+            Command.ExecuteNonQuery();
         }
 
         public void AddParam<T>(string key, T value)
         {
             if (key.StartsWith("@")) key = key.Substring(1);
-            _sqlCommand.Parameters.AddWithValue($"@{key}", value);
+            Command.Parameters.AddWithValue($"@{key}", value);
         }
 
         public DataTable GetTable(string sSQL)
         {
-            _sqlCommand.CommandText = sSQL;
-            var myAdpater = new SqlDataAdapter { SelectCommand = _sqlCommand };
+            Command.CommandText = sSQL;
+            var myAdpater = new SqlDataAdapter {SelectCommand = Command};
             var dt = new DataTable();
             myAdpater.Fill(dt);
             return dt;
@@ -40,13 +41,10 @@ namespace DataAccess
 
         public void Dispose()
         {
-            if (_sqlConnection.State == ConnectionState.Open)
-                _sqlConnection.Close();
+            if (Connection.State == ConnectionState.Open)
+                Connection.Close();
         }
 
-        public void ClearParameters()
-        {
-            _sqlCommand.Parameters.Clear();
-        }
+        public void ClearParameters() => Command.Parameters.Clear();
     }
 }

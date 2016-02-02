@@ -8,10 +8,7 @@ namespace ConsoleHarness
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            RunService();
-        }
+        static void Main(string[] args) => RunService();
 
         static void RunService()
         {
